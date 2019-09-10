@@ -24,9 +24,15 @@ def product(request: HttpRequest, product_id: int):
 
 class LoginView(View):
     def get(self, request: HttpRequest):
+        user: User = request.user
+        if user.is_authenticated:
+            return redirect('/')
         return render(request, 'login.html')
 
     def post(self, request: HttpRequest):
+        user: User = request.user
+        if user.is_authenticated:
+            return redirect('/')
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
@@ -38,9 +44,15 @@ class LoginView(View):
 
 class RegisterView(View):
     def get(self, request: HttpRequest):
+        user: User = request.user
+        if user.is_authenticated:
+            return redirect('/')
         return render(request, 'register.html')
 
     def post(self, request: HttpRequest):
+        user: User = request.user
+        if user.is_authenticated:
+            return redirect('/')
         username = request.POST['username']
         password = request.POST['password']
         try:
