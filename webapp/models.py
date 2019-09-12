@@ -5,9 +5,9 @@ from django.core.exceptions import ValidationError
 # Create your models here.
 
 
-def price_validator(price: float):
-    if price < 0:
-        raise ValidationError('Price must be positive')
+def non_neg_validator(value: float):
+    if value < 0:
+        raise ValidationError('Value must be positive')
 
 
 class Named(models.Model):
@@ -21,7 +21,7 @@ class Named(models.Model):
 
 
 class Product(Named):
-    price = models.DecimalField(max_digits=8, decimal_places=2, validators=[price_validator])
+    price = models.DecimalField(max_digits=8, decimal_places=2, validators=[non_neg_validator])
 
     def convert_price(self, user: User):
         currency = Currency.objects.get(pk=1)
@@ -52,3 +52,9 @@ class Currency(Named):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     currency = models.ForeignKey(Currency, on_delete=models.SET_DEFAULT, default=1)
+
+
+class Cart(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField(max_length=2, validators=[non_neg_validator])
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)

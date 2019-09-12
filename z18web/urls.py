@@ -20,7 +20,9 @@ import webapp.views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', webapp.views.index),
-    path('product/<int:product_id>', webapp.views.product),
+    path('product/<int:product_id>', webapp.views.product, name='product'),
     path('login', webapp.views.LoginView.as_view(), name='login'),
-    path('register', webapp.views.RegisterView.as_view(), name='register')
+    path('register', webapp.views.RegisterView.as_view(), name='register'),
+    path('cart', webapp.views.CartView.as_view(), name='cart'),
+    path('test', webapp.views.TestView.as_view())
 ]
