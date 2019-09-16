@@ -22,6 +22,7 @@ class Named(models.Model):
 
 class Product(Named):
     price = models.DecimalField(max_digits=8, decimal_places=2, validators=[non_neg_validator])
+    image = models.ImageField(default='palm-phone-gold.png')
 
     def convert_price(self, user: User):
         currency = Currency.objects.get(pk=1)

@@ -1,4 +1,5 @@
 {% load call %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,15 +11,27 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <title>Title</title>
+    <style>
+        body {
+            background: url("{% static 'img_lights.jpg' %}");
+            background-size: 100% 100%;
+        }
+        .product-title {
+            height: 60px;
+        }
+        .product-image {
+            height: 250px;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
     <div class="row">
         {% for product in products %}
-            <div class="col-md-auto"><div class="card" style="width: 18rem;">
-                <img class="card-img-top">
+            <div class="col-md-auto"><div class="card" style="width: 15rem;">
+                <img class="card-img-top product-image" src="/media/{{ product.image }}">
                 <div class="card-body">
-                    <h5 class="card-title">{{ product.name }}</h5>
+                    <h5 class="card-title product-title">{{ product.name }}</h5>
                     <p class="card-text">{{ product|convert_price:request.user }}</p>
                     <form action="{% url 'cart' %}" method="post">
                         <input type="number" name="quantity">
@@ -31,6 +44,12 @@
         {% endfor %}
         <div class="col"></div>
     </div>
+    {% if prev_page %}
+    <a class="btn btn-primary" href="{% url 'index' %}?page={{ prev_page }}" role="button">Prev page</a>
+    {% endif %}
+    {% if next_page %}
+    <a class="btn btn-primary" href="{% url 'index' %}?page={{ next_page }}" role="button">Next page</a>
+    {% endif %}
 </div>
 
 <!-- Optional JavaScript -->

@@ -11,8 +11,17 @@ from .forms import *
 
 
 def index(request: HttpRequest):
-    products = Product.objects.all()
-    return render(request, 'index.html', {'products': products})
+    page = int(request.GET.get('page', 1))
+    begin = 8 * (page - 1)
+    end = 8 * page
+    products = Product.objects.all().order_by('id')[begin:end]
+    count = Product.objects.count()
+    context = {'products': products}
+    if page > 1:
+        context['prev_page'] = page - 1
+    if end < count:
+        context['next_page'] = page + 1
+    return render(request, 'index.html', context)
 
 
 def product(request: HttpRequest, product_id: int):
@@ -78,15 +87,3 @@ class CartView(View):
             profile = Profile.objects.create(user=user)
         Cart.objects.create(product=Product.objects.get(pk=product), quantity=quantity, profile=profile)
         return redirect('/')
-
-
-class TestView(View):
-    def get(self, request: HttpRequest):
-        return render(request, "test.html", {'form': LoginForm()})
-
-    def post(self, request: HttpRequest):
-        form = LoginForm(request.POST)
-        if not form.is_valid():
-            return HttpResponse(b'error')
-        else:
-            return HttpResponse(form.cleaned_data['username'])

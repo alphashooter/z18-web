@@ -15,14 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls.static import static
 import webapp.views
+import z18web.settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', webapp.views.index),
+    path('', webapp.views.index, name='index'),
     path('product/<int:product_id>', webapp.views.product, name='product'),
     path('login', webapp.views.LoginView.as_view(), name='login'),
     path('register', webapp.views.RegisterView.as_view(), name='register'),
     path('cart', webapp.views.CartView.as_view(), name='cart'),
-    path('test', webapp.views.TestView.as_view())
-]
+] + static(z18web.settings.MEDIA_URL, document_root=z18web.settings.MEDIA_ROOT)
