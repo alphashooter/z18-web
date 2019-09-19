@@ -14,10 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf.urls.static import static
+from rest_framework.routers import DefaultRouter
 import webapp.views
+import webapp.rest
 import z18web.settings
+
+router = DefaultRouter()
+router.register('products', webapp.rest.ProductViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +31,5 @@ urlpatterns = [
     path('login', webapp.views.LoginView.as_view(), name='login'),
     path('register', webapp.views.RegisterView.as_view(), name='register'),
     path('cart', webapp.views.CartView.as_view(), name='cart'),
+    path('api/', include(router.urls))
 ] + static(z18web.settings.MEDIA_URL, document_root=z18web.settings.MEDIA_ROOT)

@@ -11,16 +11,8 @@ from .forms import *
 
 
 def index(request: HttpRequest):
-    page = int(request.GET.get('page', 1))
-    begin = 8 * (page - 1)
-    end = 8 * page
-    products = Product.objects.all().order_by('id')[begin:end]
-    count = Product.objects.count()
+    products = Product.objects.all().order_by('id')[:4]
     context = {'products': products}
-    if page > 1:
-        context['prev_page'] = page - 1
-    if end < count:
-        context['next_page'] = page + 1
     return render(request, 'index.html', context)
 
 

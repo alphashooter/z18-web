@@ -16,47 +16,81 @@
             background: url("{% static 'img_lights.jpg' %}");
             background-size: 100% 100%;
         }
+
         .product-title {
             height: 60px;
         }
+
         .product-image {
             height: 250px;
         }
     </style>
+    <script>
+        var offset = 4;
+        var limit = 4;
+        function load_more(btn) {
+            $.ajax(
+               "/api/products/?offset=" + offset + "&limit=" + limit,
+                {
+                    success: function (data) {
+                        offset += limit;
+                        var products = data.results;
+                        if (offset >= data.count)
+                            $(btn).hide();
+                        for (var i = 0; i < products.length; ++i) {
+                            var product = products[i];
+                            $("#product-list").append(
+                                '           <div class="col-md-auto">\n' +
+                                '                <div class="card" style="width: 15rem;">\n' +
+                                '                    <img class="card-img-top product-image" src="' + product.image + '">\n' +
+                                '                    <div class="card-body">\n' +
+                                '                        <h5 class="card-title product-title">' + product.name + '</h5>\n' +
+                                '                        <p class="card-text">$' + product.price + '</p>\n' +
+                                '                        <form action="{% url 'cart' %}" method="post">\n' +
+                                '                            <input type="number" name="quantity">\n' +
+                                '                            <input type="hidden" name="product" value="' + product.id + '">\n' +
+                                '                            <button type="submit" class="btn btn-primary">Add to cart</button>\n' +
+                                '                            {% csrf_token %}\n' +
+                                '                        </form>\n' +
+                                '                    </div>\n' +
+                                '                </div>\n' +
+                                '            </div>'
+                            );
+                        }
+                    }
+                }
+            );
+        }
+    </script>
 </head>
 <body>
 <div class="container">
-    <div class="row">
+    <div id="product-list" class="row">
         {% for product in products %}
-            <div class="col-md-auto"><div class="card" style="width: 15rem;">
-                <img class="card-img-top product-image" src="/media/{{ product.image }}">
-                <div class="card-body">
-                    <h5 class="card-title product-title">{{ product.name }}</h5>
-                    <p class="card-text">{{ product|convert_price:request.user }}</p>
-                    <form action="{% url 'cart' %}" method="post">
-                        <input type="number" name="quantity">
-                        <input type="hidden" name="product" value="{{ product.id }}">
-                        <button type="submit" class="btn btn-primary">Add to cart</button>
-                        {% csrf_token %}
-                    </form>
+            <div class="col-md-auto">
+                <div class="card" style="width: 15rem;">
+                    <img class="card-img-top product-image" src="/media/{{ product.image }}">
+                    <div class="card-body">
+                        <h5 class="card-title product-title">{{ product.name }}</h5>
+                        <p class="card-text">{{ product|convert_price:request.user }}</p>
+                        <form action="{% url 'cart' %}" method="post">
+                            <input type="number" name="quantity">
+                            <input type="hidden" name="product" value="{{ product.id }}">
+                            <button type="submit" class="btn btn-primary">Add to cart</button>
+                            {% csrf_token %}
+                        </form>
+                    </div>
                 </div>
-            </div></div>
+            </div>
         {% endfor %}
         <div class="col"></div>
     </div>
-    {% if prev_page %}
-    <a class="btn btn-primary" href="{% url 'index' %}?page={{ prev_page }}" role="button">Prev page</a>
-    {% endif %}
-    {% if next_page %}
-    <a class="btn btn-primary" href="{% url 'index' %}?page={{ next_page }}" role="button">Next page</a>
-    {% endif %}
+    <button class="btn btn-primary" role="button" onclick="load_more(this)">Load more</button>
 </div>
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>
